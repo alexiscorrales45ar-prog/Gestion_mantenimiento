@@ -17,33 +17,50 @@ spl_autoload_register(function ($class){
 
 use config\Database;
 use App\Repositories\ClienteRepository;
+use App\Repositories\SolicitudRepository;
 use App\Controllers\clienteController;
+use App\Controllers\SolicitudController;
+
 
 //Instanciar dependicias de SQLite y Repository
 
+// Inicializar base de datos y repositorios
+At the moment, database connection handles tables automatically.
 $database = new Database();
-$db = $database->getConnetion();
-$clienteRepository =new ClienteRepository($db);
-$clienteController =new clienteController($clienteRepository);
+$db = $database->getConnection();
 
-// Enrutamiento basico para procesar el registro de cliente
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$method = $_SERVER['REQUEST_METHOD'];
+$clienteRepo = new ClienteRepository($db);
+$solicitudRepo = new SolicitudRepository($db);
 
-if ($uri=== '/api/clientes' && $method === 'POST'){
-    $clienteController->registrar();
-    exit;
+$clienteController = new ClienteController($clienteRepo);
+$solicitudController = new SolicitudController($solicitudRepo);
+
+// Capturar la variable de control por POST o GET (como en tu trabajo)
+$cargar_archivo = $_REQUEST['cargar_archivo'] ?? 0;
+
+// Enrutamiento mediante switch-case
+switch ((int)$cargar_archivo) {
+    case 1:
+        // Caso de Uso 1: Registrar Cliente y Equipo (RF01)[cite: 1]
+        $clienteController->registrar();
+        break;
+
+    case 2:
+        // Caso de Uso 2: Registrar Solicitud de Mantenimiento (RF02)[cite: 1]
+        $solicitudController->registrar();
+        break;
+
+    case 3:
+        // Endpoint auxiliar opcional para listar equipos en el selector de solicitudes
+        header('Content-Type: application/json');
+        echo json_encode($solicitudRepo->obtenerEquiposConClientes());
+        break;
+
+    default:
+        // Si no se envía ninguna acción, carga la vista de cliente por defecto
+        require_once __DIR__ . '/cliente.html';
+        break;
 }
-
-//Si se accede a la raiz, redirigir a la vista del formulario
-
-if ($uri === '/' || str_contains($uri, 'index.php')){
-    require_once __DIR__ . '/cliente.html';
-    exit;
-}
-
-http_response_code(404);
-echo json_encode(['success'=> false, 'massege'=>'Ruta no encontrada']);
 
 
 ?>
