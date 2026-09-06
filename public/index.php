@@ -6,36 +6,35 @@ spl_autoload_register(function ($class){
     $class = str_replace('config\\', 'src/config', $class);
 
     // convertir separadores de namespace en separadosres de ruta
-
     $file = __DIR__ . '/../' . str_replace('\\', '/', $class) . '.php';
 
     if (file_exists($file)){
         require_once $file;
     }
-    
 });
 
-use config\Database;
+use App\Config\Database;
 use App\Repositories\ClienteRepository;
 use App\Repositories\SolicitudRepository;
-use App\Controllers\clienteController;
+use App\Repositories\TecnicoRepository;
+use App\Repositories\OrdenTrabajoReporsitory;
+use App\Controllers\ClienteController;
 use App\Controllers\SolicitudController;
+use App\Controllers\OrdenTrabajoController;
 
-
-//Instanciar dependicias de SQLite y Repository
-
-// Inicializar base de datos y repositorios
-At the moment, database connection handles tables automatically.
-$database = new Database();
-$db = $database->getConnection();
+// Inicializar base de datos y repositorios usando el Singleton
+$db = Database::getInstance()->getConnection(); // <-- ¡Aquí faltaba el punto y coma!
 
 $clienteRepo = new ClienteRepository($db);
 $solicitudRepo = new SolicitudRepository($db);
+$tecnicoRepo = new TecnicoRepository(); 
+$ordenRepo = new OrdenTrabajoReporsitory();
 
 $clienteController = new ClienteController($clienteRepo);
 $solicitudController = new SolicitudController($solicitudRepo);
+$ordenTrabajoController = new OrdenTrabajoController(); // <-- Corregido a la clase correcta
 
-// Capturar la variable de control por POST o GET (como en tu trabajo)
+// Capturar la variable de control por POST o GET
 $cargar_archivo = $_REQUEST['cargar_archivo'] ?? 0;
 
 // Enrutamiento mediante switch-case
@@ -56,11 +55,14 @@ switch ((int)$cargar_archivo) {
         echo json_encode($solicitudRepo->obtenerEquiposConClientes());
         break;
 
+    case 4:
+        // Caso de Uso 3: Generar y Asignar Orden de Trabajo (RF03)[cite: 1]
+        $ordenTrabajoController->crearOrden();
+        break;
+
     default:
         // Si no se envía ninguna acción, carga la vista de cliente por defecto
         require_once __DIR__ . '/cliente.html';
         break;
 }
-
-
 ?>
