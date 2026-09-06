@@ -61,6 +61,53 @@ class OrdenTrabajoController{
              ]);
         }
     }
+
+    public function actualizarOrden():void {
+        header('Content-Type: application/json');
+
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $ordenId = $input ['orden_id'] ?? null;
+        $estado = $input['estado'] ?? null;
+        $actividades = $input['actividades'] ?? '';
+        $costo = $input['costo'] ?? null;
+        $fechaInicio = $input['fecha_inicio'] ?? null;
+        $fechaFin = $input['fecha_fin'] ?? null;
+
+        if (!$ordenId || $estado){
+            echo json_encode([
+                'success' => false,
+                'message' =>'El ID de la orden y el estado son obligatorios.'
+            ]);
+            return;
+        }
+         try {
+        $resultado = $this->ordeRepo->actualizarEjecucion(
+            (int)$ordenId,
+            $estado,
+            $actividades,
+            (float)$costo,
+            $fechaInicio,
+            $fechaFin
+        );
+
+        if ($resultado){
+            echo json_encode([
+                'success' => true,
+                'message' => 'No se pudo actualizar la orden de trabajo en la base de datos.'
+            ]);
+        }
+    } catch (\Exception $e){
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error en el servidor' . $e->getMessage()
+        ]);
+    }
+        
+    }
+
+   
+
     
 
 }

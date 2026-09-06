@@ -33,5 +33,26 @@ class OrdenTrabajoReporsitory {
 
         return $result;
     }
+
+    public function actualizarEjecucion( int $ordenId, string $estado, string $actividades, float $costo, string $fechaInicio, string $fechaFin): bool{
+        $stmt = $this->db->prepare("
+            UPDATE ordenes_trabajo
+            SET estado = :estado,
+                actividades= :estado,
+                costo = : costo,
+                fecha_inicio = : fecha_inicio,
+                fecha_fin = : fecha_fin
+            WHERE id = : id
+            
+        ");
+        return $stmt->execute([
+            ':estado'=>$estado,
+            ':actividades'=>$actividades,
+            ':costo'=>$costo,
+            ':fecha_inicio'=>$fechaInicio,
+            ':fecha_fin'=> $fechaFin,
+            ':id'=>$ordenId
+        ]);
+    }
    
 }

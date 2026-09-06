@@ -64,5 +64,10 @@ switch ((int)$cargar_archivo) {
         // Si no se envía ninguna acción, carga la vista de cliente por defecto
         require_once __DIR__ . '/cliente.html';
         break;
+
+    case 5:
+        // cas de uso 4: ejecutar y actualizar orden de trabajo
+        $ordenTrabajoController->actualizarOrden();
+        break;
 }
 ?>
