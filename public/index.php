@@ -69,5 +69,9 @@ switch ((int)$cargar_archivo) {
         // cas de uso 4: ejecutar y actualizar orden de trabajo
         $ordenTrabajoController->actualizarOrden();
         break;
+    
+    case 6:
+        //caso de Uso 5: Consultar historail l generar reportes
+        $ordenTrabajoController->generarReporteHistorial();
 }
 ?>

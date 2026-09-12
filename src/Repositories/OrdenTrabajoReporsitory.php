@@ -54,5 +54,33 @@ class OrdenTrabajoReporsitory {
             ':id'=>$ordenId
         ]);
     }
+
+    
+    public function obtenerHistorialReportes(string $filtro = ''): array{
+        $sql = "
+            SELECT ot.id as orden_id, ot.estado, ot.actividades, ot.costo, ot.fecha_inicio, ot.fecha_fin,
+                s.problema, s.prioridad,
+                c.nombre as cliente_nombre,
+                e.tipo as equipo_tipo, e.marca as equipo_marca,
+                t.nombre as tecnico_nombre
+            FROM ordenes_trabajo ot
+            JOIN solicitudes s ON ot.solicitud_id = d.id
+            JOIN clientes c ON s.cliente_id = c.id
+            JOIN equipos e ON s.equipo_id = e.id
+            JOIN tecnicos t ON ot.tenico_id = t.id
+        ";
+        if (!empty($filtro)){
+            $sql .= "WHERE c.nombre LIKE : filtro OR e.tipo LIKE OR t.nombre LIKE : filtro OR ot.estado LIKE : filtro ";
+            $stmt = $this->db->prepare($sql);
+            $stmt ->execute(['filtro'=> "%$filtro%"]);
+        } else{
+            $stmt = $this ->db->prepare($sql);
+            $stmt->execute();
+        }
+        return $stmt->fetchALL(\PDO::FETCH_ASSOC);
+
+    }
+
+    public function guenerarReporteHistorial():void {}
    
 }

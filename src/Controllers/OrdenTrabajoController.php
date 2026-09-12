@@ -6,10 +6,10 @@ use app\Models\OrdenTrabajo;
 
 
 class OrdenTrabajoController{
-    private OrdenTrabajoReporsitory $ordeRepo;
+    private OrdenTrabajoReporsitory $ordenRepo;
 
     public function __construct(){
-        $this->ordeRepo = new OrdenTrabajoReporsitory ();
+        $this->ordenRepo = new OrdenTrabajoReporsitory ();
 
     
     }
@@ -41,7 +41,7 @@ class OrdenTrabajoController{
                 null,
                 'ASIGNADA'
             );
-            $resultado = $this->ordeRepo->guardar($orden);
+            $resultado = $this->ordenRepo->guardar($orden);
 
             if ($resultado){
                 echo json_encode([
@@ -82,7 +82,7 @@ class OrdenTrabajoController{
             return;
         }
          try {
-        $resultado = $this->ordeRepo->actualizarEjecucion(
+        $resultado = $this->ordenRepo->actualizarEjecucion(
             (int)$ordenId,
             $estado,
             $actividades,
@@ -106,8 +106,26 @@ class OrdenTrabajoController{
         
     }
 
-   
+    public function generarReporteHistorial(): void {
+        if (!headers_sent()) {
+            header('Content-Type: application/json');
+        }
 
-    
+        $filtro = $_GET['filtro'] ?? '';
+
+        try {
+            $datos = $this->ordenRepo->obtenerHistorialReportes($filtro);
+            echo json_encode([
+                'success' => true,
+                'data' => $datos
+            ]);
+        } catch (\Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error al generar el reporte: ' . $e->getMessage()
+            ]);
+        }
+    }
 
 }
+
