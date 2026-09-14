@@ -1,112 +1,84 @@
 <!DOCTYPE html>
-<html lang="es">
+<htmil lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel del Técnico - Ejecución de Orden</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 600px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: auto; }
-        h2 { color: #0056b3; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-top: 0; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        textarea { resize: vertical; height: 100px; }
-        button { background-color: #0056b3; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; }
-        button:hover { background-color: #004494; }
-        #mensaje { margin-top: 15px; padding: 10px; border-radius: 4px; display: none; text-align: center; }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    </style>
+    <meta mane="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del técnico - Gestion de mantenimiento</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/tecnico.js"></script>
 </head>
 <body>
 
-<div class="container">
-    <h2>Ejecutar Orden de Trabajo (Técnico)</h2>
-    
-    <div id="mensaje"></div>
+    <header>
+        <h1> Panel de Tecnico de Mantenimiento</h1>
+        <p> Consulta de órdenes adignadas y ejecución de servicios.</p>
+    </header>
+    <main>
+        <section>
+            <h2> Consulta Orden Asignada</h2>
+            <div>
+                <label for="buscar_orden_id">ID de Orden</label>
+                <input type="number" id="buscar_orden_id" placeholder="Ingresa ID de orden">
+                <button type="button" id="btnConsultarOrden">Consultar Detalles</button>
+            </div>
+        </section>
 
-    <form id="formEjecucion">
-        <div class="form-group">
-            <label for="orden_id">ID de la Orden de Trabajo:</label>
-            <input type="number" id="orden_id" name="orden_id" required placeholder="Ej. 1">
-        </div>
+        <!--Informacion detallada de la ornden y equipo (lectura) -->
+        <sectionz id="infoOrdenContainer" style="display: none;">
+            <h3>Detalles del Servicio y Equipo</h3>
+            <div>
+                <p><strong>Cliente:</strong> <span id="lblCliente">-</span></p>
+                <p><strong>Equipo:</strong> <span id="lblEquipo">-</span></p>
+                <p><strong>Problema Reportado:</strong> <span id="lblProblema">-</span></p>
+                <p><strong>Prioridad</strong> <span id="lblPrioridad">-</span></p>
+            </div>
+        </sectionz>
 
-        <div class="form-group">
-            <label for="estado">Estado del Servicio:</label>
-            <select id="estado" name="estado" required>
-                <option value="EN_PROCESO">En Proceso</option>
-                <option value="FINALIZADA">Finalizada</option>
-            </select>
-        </div>
+        <!--Formulario de Ejecucion y actualización-->
+        <seccion>
+            <h2>Actualizar Ejecucion de la Orden</h2>
+            <div id="mensajeTecnico"></div>
 
-        <div class="form-group">
-            <label for="actividades">Actividades Realizadas:</label>
-            <textarea id="actividades" name="actividades" placeholder="Describa el mantenimiento realizado..."></textarea>
-        </div>
+            <form id="formEjecucionTecnica">
+                <div class="form-group">
+                    <label for="orden_id">ID de la Orden de Trabajo</label>
+                    <input type="number" id="orden_id" name="orden_id" required placeholder="ej. 1">
+                </div>
 
-        <div class="form-group">
-            <label for="costo">Costo Total / Materiales ($):</label>
-            <input type="number" step="0.01" id="costo" name="costo" placeholder="0.00">
-        </div>
+                <div class="form-group">
+                    <label for="estado">Estado del servicio</label>
+                    <select id="estado" name="estado" required>
+                        <option value="">Selecion un estado</option>
+                        <option value="EN_PROCESO">En proceso</option>
+                        <option value="FINALIZADA">Finalizada</option>
+                    </select>
+                </div>
 
-        <div class="form-group">
-            <label for="fecha_inicio">Fecha y Hora de Inicio:</label>
-            <input type="datetime-local" id="fecha_inicio" name="fecha_inicio">
-        </div>
+                <div class="form-group">
+                    <label for="actividades">Actividades Realizadas</label>
+                    <teztarea id="actividades" name="actividades"  rows="4" placeholder="Describa el mantenimiento realizado..."></teztarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="costo">Costo total/Materiales($)</label>
+                    <input type="number" step="0.01" id="costo" name="costo" placeholder="0.00">
+                </div>
 
-        <div class="form-group">
-            <label for="fecha_fin">Fecha y Hora de Finalización:</label>
-            <input type="datetime-local" id="fecha_fin" name="fecha_fin">
-        </div>
+                <div class="form-group">
+                    <label for="fecha_inicio">Fecha y hora de Inicio</label>
+                    <input type="datetime-local" id="fecha_inicio" name="fecha_inicio">
+                </div>
 
-        <button type="submit">Actualizar y Registrar Ejecución</button>
-    </form>
-</div>
+                <div class="form-group">
+                    <label for="fecha_fin">Fecha y hora de Finalización</label>
+                    <input type="datetime-local" id="fecha_fin" name="fecha_fin">
+                </div>
 
-<script>
-    document.getElementById('formEjecucion').addEventListener('submit', async function(e) {
-        e.preventDefault();
+                <button type="submit">Guardar y Actualizar Orden</button>
 
-        const datos = {
-            orden_id: document.getElementById('orden_id').value,
-            estado: document.getElementById('estado').value,
-            actividades: document.getElementById('actividades').value,
-            costo: parseFloat(document.getElementById('costo').value) || 0.0,
-            fecha_inicio: document.getElementById('fecha_inicio').value,
-            fecha_fin: document.getElementById('fecha_fin').value
-        };
 
-        const divMensaje = document.getElementById('mensaje');
-
-        try {
-            // Petición dirigida al enrutador index.php con el case 5
-            const respuesta = await fetch('index.php?cargar_archivo=5', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(datos)
-            });
-
-            const resultado = await respuesta.json();
-
-            divMensaje.style.display = 'block';
-            if (resultado.success) {
-                divMensaje.className = 'success';
-                divMensaje.textContent = resultado.message;
-                document.getElementById('formEjecucion').reset();
-            } else {
-                divMensaje.className = 'error';
-                divMensaje.textContent = resultado.message || 'Ocurrió un error al actualizar.';
-            }
-        } catch (error) {
-            divMensaje.style.display = 'block';
-            divMensaje.className = 'error';
-            divMensaje.textContent = 'Error de conexión con el servidor.';
-        }
-    });
-</script>
-
+            </form>
+        </seccion>
+    </main>
 </body>
-</html>
+</htmil>

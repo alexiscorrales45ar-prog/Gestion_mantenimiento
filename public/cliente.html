@@ -2,56 +2,92 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content=""width=device-width, initial-scale=1.0">
-    <title>Registrar cliente y Equipo - Mantenimiento</title>
-    <link rel="stylesheet" href="css/strilos.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Solicitudes - Mantenimiento</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/cliente.js"></script>
 </head>
 <body>
-<div class = "container">
-    <h2> Caso de unso 1: Registrar cliente y equipo </h2>
+    <header>
+        <h1>Módulo de Cliente y Equipo</h1>
+        <p> Registro de nuevos clientes y administración de sus actividades asociadas</p>
+    </header>
 
-    <form id = "formRegistroCliente">
-        <h3>Dats del cliente</h3>
-        <div class = "form-group">
-            <label for="nombre_cliente"> Nombre completo / Empresa</label>
-            <input type="text" id="nombre_cliente" required>
-        </div>
-        <div class="form-group">
-            <label for="contacto_cliente">Nombre completo / Empresa *</label>
-            <input type="text" id=" contecto_cliente" required>
-        </div>
-        <div class="form-group">
-            <label for="direccion_cliente">Direccion</label>
-            <input type="text" id="direccion_cliente">
-        </div>
-        <h3>Datos del Equipo / Actividad</h3>
-        <div class="form-group">
-            <label for="nombre_equipo">Nombre del Equipo *</label>
-            <input type="text" id="nombre_equipo" placeholder="Ej: laptop Dell, compresor 50l" required>
-        </div>
-        <div class="form-group">
-            <label for="marca">Marca</label>
-            <input type="text" id="marca">
-        </div>
-        <div class="form-group">
-            <label for="modelo">Modelo</label>
-            <input type="text" id="modelo">
-        </div>
-        <div class="form-group">
-            <label for="serie">Número de Serie</label>
-            <input type="text" id="serie">
-        </div>
+    <main>
+        <!--Formulario para Registrar Cliente-->
+        <section>
+            <h2>Registrar Nuevo Cliente</h2>
+            <dev id="mensajeCliente"></dev>
 
-        <button type="submit">Guardar Cliente y Equipo</button>
-    </form>
+            <form id="formCliente">
+                <div>
+                    <label for="nombre">Nombre del cliente</label>
+                    <input type="text" id="contacto" name="contacto" required placeholder="ej. 3109876543">
+                </div>
 
-    <div id="mensaje"></div>
-</div>
+                <div class="form-group">
+                    <label for="direccion">Direccion</label>
+                    <input type="text" id="direccoin" name="direccion" required placeholder="Ej. Carrera 15 # 45-20">  
+                </div>
+                
+                <button type="submit">Guardar Cliente</button>
+            </form>
+        </section>
 
-<script src="js/clientes.js"></script>
+        <!--formulario para registrar equipo asociado-->
+        <section>
+            <h2>Registrar Equipo o Activo</h2>
+            <dvi id="mensajeEquipo"></dvi>
+
+            <form>
+                <div class="form-group">
+                    <label for="cliente_id">ID del Cliente Propietario:</label>
+                    <input type="number" id="cliente_id" name="cliente_id" required placeholder="ej. 1">      
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo de Equipo:</label>
+                    <input type="text" id="tipo" name="tipo" required placeholder="Ej. Servidor, Laptop, Impresora">
+                </div>
+
+                <div class="form-group">
+                    <label for="marca">Marca y Modelo:</label>
+                    <input type="text" id="marca" name="marca" required placeholder="Ej. Dell Latitude 3420">
+                </div>
+
+                <button type="submit">Registrar Equipo</button>
+            </form>
+        </section>
+
+        <!-- Listado general de Clientes y Equipos -->
+        <section>
+            <h2>Clientes y Equipos Registrados</h2>
+            <div>
+                <button type="button" id="btnCargarClientes">Actualizar Listados</button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <h3>Listado de Clientes</h3>
+                <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Contacto</th>
+                            <th>Dirección</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaClientesBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No hay clientes registrados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
 </body>
 </html>
-        
+  
 
 

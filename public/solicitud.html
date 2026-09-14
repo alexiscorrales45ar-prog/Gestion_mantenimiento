@@ -3,42 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Solicitud de Mantenimiento - Mantenimiento</title>
+    <title> Gestión de Solicitud - Mentenimiento</title>
     <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/solicitudes.js"></script>
 </head>
 <body>
 
-<div class="container">
-    <h2>Caso de Uso 2: Registrar Solicitud de Mantenimiento (RF02)</h2>
-    
-    <form id="formSolicitud">
-        <div class="form-group">
-            <label for="equipo_id">Seleccionar Equipo / Activo *</label>
-            <select id="equipo_id" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                <option value="">Cargando equipos...</option>
-            </select>
-        </div>
+    <header>
+        <h1>Módulo de Solicitudes de Mantenimiento</h1>
+        <p>Registro y control de incidencias reportadas por los clientes.</p>
+    </header>
 
-        <div class="form-group">
-            <label for="descripcion_problema">Descripción del Problema *</label>
-            <textarea id="descripcion_problema" rows="4" placeholder="Describa detalladamente la falla o servicio requerido..." required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;"></textarea>
-        </div>
+    <main>
 
-        <div class="form-group">
-            <label for="prioridad">Prioridad *</label>
-            <select id="prioridad" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                <option value="BAJA">Baja</option>
-                <option value="MEDIA" selected>Media</option>
-                <option value="ALTA">Alta</option>
-            </select>
-        </div>
+        <!-- Formulario para Registrar Nueva Solicitud-->
+         <section>
+            <h2>Registrar Nuevo Solicitud</h2>
+            <div id="mensajeSolicitud"></div>
 
-        <button type="submit">Registrar Solicitud (Pendiente)</button>
-    </form>
+            <form id="forSolicitud">
+                <div class="form-group">
+                    <label for="cliente_id">ID del Cliente</label>
+                    <input type="number" id="cliente_id" name="cliente_id" required placeholder="ej.1">
+                </div>
 
-    <div id="mensaje"></div>
-</div>
+                <div class="form-group">
+                    <label for="Equipo_id">ID del Equipo</label>
+                    <input type="number" id="Equipo_id" name="Equipo_id" require placeholder="ej.1">
+                </div>
 
-<script src="js/solicitudes.js"></script>
+                <div class="form-group">
+                    <label for="Problema">Descripcion del Problema</label>
+                    <textarea id="Problema" name="Problema" rows="4" required placeholder="Detalle la fall reportada por el cliente..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="Prioridad">prioridad de la Solicitud</label>
+                    <select id="prioridad" name="prioridad" required>
+                        <option value="baja">Baja</option>
+                        <option value="Media" selected>Media</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha_solicitud">Fecha de Solicitud</label>
+                    <input type="date" id="fecha_solicitud" name="fecha_solicitud">
+                </div>
+
+                <button type="submit">Registrar Solicitud (Pendiente)</button>
+            </form>
+         </section>
+
+         <!--Listado o consulta rapida de solicitudes pendientes -->
+         <section>
+            <h2>Listado de Solicitudes Registradas</h2>
+            <div>
+                <button type="button" id="btnCargarSolicitudes">Actualizar Listado</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Equipo</th>
+                            <th>Problema</th>
+                            <th>Prioridad</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSolicitudesBody">
+                        <!--Los datos se cargaran aqui mediante JS posteriormente -->
+                        <te>
+                            <td colspan="6" style="text-align: center;">No hay solicitudes cargadas</td>
+                        </te>
+                    </tbody>
+                </table>
+            </div>
+         </section>
+    </main>
+
 </body>
 </html>

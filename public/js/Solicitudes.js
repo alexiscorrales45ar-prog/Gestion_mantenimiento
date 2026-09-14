@@ -1,70 +1,37 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const selectEquipo = document.getElementById('equipo_id');
-    const form = document.getElementById('formSolicitud');
-    const mensajeDiv = document.getElementById('mensaje');
+document.getElementById('formSolicitud').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-    // cargar la lista de equipos disponibles al abrir la pagina (Usando acargar_archivo =3)
+    const datos = {
+        cliente_id: document.getElementById('cliente_id').value,
+        equipo_id: document.getElementById('equipo_id').value,
+        problema: document.getElementById('problema').value,
+        prioridad: document.getElementById('prioridad').value,
+        fecha_solicitud: document.getElementById('fecha_solicitud').value
+    };
 
-    try {
-        const response = await fetch('index.php?cargar_archivo=3');
-        const equipos = await response.json();
+    const divMensaje = document.getElementById('mensajeSolicitud');
 
-        selectEquipo.innerHTML = '<option value="">-- Seleccione un euqipo --</option>';
+    try{
+        const respuesta = await fetch('index.php?cargar_archivo=3',{ // Ajustar el indice segun tu enrutador central
+            method:'POST',
+            headers:{'Content-Type': 'application/json'},
+            body: JSON.stringify(datos)
+        });
 
-        if (equipos.length === 0){
-            selectEquipo.innerHTML = '<option value=""> No hay equipos registrados</option>';
-        }else{
-            equipos.forEach(eq => {
-                const option = document.createElement('option');
-                option.value = eq.id;
-                option.textContent = `${eq.equipo_nombre} (Cliente: ${eq.cliente_nombre})`;
-                selectEquipo.appendChild(option);
+        const resultado = await respuesta.json();
 
-            });
+        divMensaje.style.display = 'block';
+        if (resultado.success){
+            divMensaje.className ='success';
+            divMensaje.textContent= resultado.message || 'Solicitud registrada correctamente¡';
+            document.getElementById('formSolicitud').reset();
+        } else {
+            divMensaje.className = 'error';
+            DevMensaje.textContent = resultado.message || 'No se puedo registrar la solicitud.';   
         }
     } catch (error){
-        console.error('Error al cargar equipos:',error);
-        selectEquipo.innerHTML = '<option value="">Error al cargar equipos </option>';
+        divMensaje.style.display='block';
+        divMensaje.className = 'error';
+        divMensaje.textContent = 'Error de conexión con el servidor.';
     }
-
-    // envair la solicitud de mantenimiento (Usando cargar_archivo = 2)
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const payload = {
-            cargar_archivo: 2, // parametro de enrutamiento para RF02
-            equipo_id: selectEquipo.value,
-            descripcion_problema: document.getElementById('descripcion_problema'). value.trim(),
-            prioridad: document.getElementById('prioridad').value
-        };
-
-        try{
-            const response = await fetch('index.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'applicaction/json'
-                },
-                body:JSON.stringify(payload)
-            });
-            const result = await response.json();
-
-            mensajeDiv.style.display = 'block';
-            if (result.success) {
-                mensajeDiv.classNme = 'exito';
-                mensajeDiv.textContent = result.message;
-                form.reset();
-                selectEquipo.selectedIndex = 0;
-            } else {
-                mensajeDiv.classNme = 'error';
-                mensajeDiv.textContent = result.message;
-            }
-        } catch (error){
-            console.error('Error de red:', error );
-            mensajeDiv.style.display ='block' ;
-            mensajeDiv.className = 'error';
-            mensajeDiv.textContent = 'Error al comunicarse con el servidor.';
-        }
-    });
-
-
 });
