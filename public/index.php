@@ -1,19 +1,19 @@
 <?php
-//Autoload nativo PSR-4 para cargar automaticamente las clases de src/ y config/
-spl_autoload_register(function ($class){
-    //normalizar namespace App\ por la carptea src/
-    $class = str_replace('app\\', 'src/', $class);
-    $class = str_replace('config\\', 'src/config', $class);
+spl_autoload_register(function($class){
 
-    // convertir separadores de namespace en separadosres de ruta
+    if (str_starts_with($class, 'App\\')){
+        $class = 'src/' . substr($class, 4);
+    }
+
     $file = __DIR__ . '/../' . str_replace('\\', '/', $class) . '.php';
 
     if (file_exists($file)){
         require_once $file;
     }
+
 });
 
-use App\Config\Database;
+use App\config\Database;
 use App\Repositories\ClienteRepository;
 use App\Repositories\SolicitudRepository;
 use App\Repositories\TecnicoRepository;
