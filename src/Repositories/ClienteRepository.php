@@ -1,8 +1,8 @@
 <?php
 namespace app\Repositories;
 
-use app\Models\Cliente;
-use app\Models\Equipo;
+use App\Models\Cliente;
+use App\Models\Equipo;
 use PDO;
 use ReturnTypeWillChange;
 

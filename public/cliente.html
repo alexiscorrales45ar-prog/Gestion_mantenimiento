@@ -17,32 +17,43 @@
         <!--Formulario para Registrar Cliente-->
         <section>
             <h2>Registrar Nuevo Cliente</h2>
-            <dev id="mensajeCliente"></dev>
+            <!-- Corregido: div en lugar de dev -->
+            <div id="mensajeCliente" style="display: none; padding: 10px; margin-bottom: 10px;"></div>
 
             <form id="formCliente">
                 <div>
                     <label for="nombre">Nombre del cliente</label>
-                    <input type="text" id="contacto" name="contacto" required placeholder="ej. 3109876543">
+                    <!-- Corregido: id="nombre" -->
+                    <input type="text" id="nombre" name="nombre" required placeholder="Ej. Iswar Ramirez">
                 </div>
 
                 <div class="form-group">
-                    <label for="direccion">Direccion</label>
-                    <input type="text" id="direccoin" name="direccion" required placeholder="Ej. Carrera 15 # 45-20">  
+                    <label for="contacto">Contacto (Teléfono/Email)</label>
+                    <!-- Agregado: el campo de contacto que pedía el JS -->
+                    <input type="text" id="contacto" name="contacto" required placeholder="Ej. 3109876543">
+                </div>
+
+                <div class="form-group">
+                    <label for="direccion">Dirección</label>
+                    <!-- Corregido: id="direccion" (estaba direccoin) -->
+                    <input type="text" id="direccion" name="direccion" required placeholder="Ej. Carrera 15 # 45-20">  
                 </div>
                 
                 <button type="submit">Guardar Cliente</button>
             </form>
         </section>
 
-        <!--formulario para registrar equipo asociado-->
+        <!--Formulario para registrar equipo asociado-->
         <section>
             <h2>Registrar Equipo o Activo</h2>
-            <dvi id="mensajeEquipo"></dvi>
+            <!-- Corregido: div en lugar de dvi -->
+            <div id="mensajeEquipo" style="display: none; padding: 10px; margin-bottom: 10px;"></div>
 
-            <form>
+            <!-- Corregido: Agregado id="formEquipo" -->
+            <form id="formEquipo">
                 <div class="form-group">
                     <label for="cliente_id">ID del Cliente Propietario:</label>
-                    <input type="number" id="cliente_id" name="cliente_id" required placeholder="ej. 1">      
+                    <input type="number" id="cliente_id" name="cliente_id" required placeholder="Ej. 1">      
                 </div>
                 <div class="form-group">
                     <label for="tipo">Tipo de Equipo:</label>
@@ -58,7 +69,7 @@
             </form>
         </section>
 
-        <!-- Listado general de Clientes y Equipos -->
+        <!-- Listado general de Clientes y Equipos (Se mantiene igual) -->
         <section>
             <h2>Clientes y Equipos Registrados</h2>
             <div>

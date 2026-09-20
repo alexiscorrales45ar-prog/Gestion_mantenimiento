@@ -1,8 +1,8 @@
 <?php
 namespace app\Controllers;
-use app\Repositories\ClienteRepository;
-use app\Models\Cliente;
-use app\Models\Equipo;
+use App\Repositories\ClienteRepository;
+use App\Models\Cliente;
+use App\Models\Equipo;
 
 
 class clienteController{

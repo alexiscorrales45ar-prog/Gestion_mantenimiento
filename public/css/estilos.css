@@ -1,47 +1,101 @@
-/* estilos generales para el sistema de mantenimiento */
-body {
-    font-family: 'segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f4f6f9;
+/* ==========================================
+   1. Estilos Globales y Reseteo
+   ================================---------- */
+* {
     margin: 0;
-    padding: 20px;
-    color: #333;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-header{
-    background:#ffffff;
+body {
+    background-color: #f4f6f9;
+    color: #333333;
+    padding: 20px;
+}
+
+/* ==========================================
+   2. Estilos para la Pantalla de Login (Centrada)
+   ================================---------- */
+body.login-body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center;     /* Centrado vertical */
+    min-height: 100vh;       /* Obliga al contenedor a usar el 100% del alto de la pantalla */
+    width: 100%;
+}
+.login-card {
+   width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.login-card h2 {
+    color: #1e293b;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: center;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.login-card p {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* ==========================================
+   3. Estilos para Cabeceras y Paneles Internos (MVC)
+   ================================---------- */
+header {
+    background: #ffffff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     margin-bottom: 25px;
     text-align: center;
 }
-header h1{
+
+header h1 {
     color: #0056b3;
     margin: 0 0 10px 0;
     font-size: 24px;
 }
 
-header p{
+header p {
     color: #666;
     margin: 0;
     font-size: 14px;
 }
 
-main{
+main {
     max-width: 900px;
     margin: 0 auto;
 }
 
-section{
+section {
     background: #ffffff;
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgb(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     margin-bottom: 25px;
     border: 1px solid #e1e4e8;
 }
 
-h2{
+h2 {
     color: #2c3e50;
     font-size: 18px;
     border-bottom: 2px solid #eaecef;
@@ -50,11 +104,14 @@ h2{
     margin-bottom: 20px;
 }
 
+/* ==========================================
+   4. Formularios y Controles Comunes
+   ================================---------- */
 .form-group {
     margin-bottom: 15px;
 }
 
-label{
+label {
     display: block;
     margin-bottom: 6px;
     font-weight: 600;
@@ -66,21 +123,26 @@ input[type="text"],
 input[type="number"],
 input[type="date"],
 input[type="datetime-local"],
+input[type="email"],
+input[type="password"],
 select,
 textarea {
     width: 100%;
-    padding: 10px 12px;
+    padding: 11px 12px;
     border: 1px solid #ced4da;
-    border-radius: 4px;
+    border-radius: 6px;
     box-sizing: border-box;
     font-size: 14px;
-    transition: border-color 0.2s;
+    color: #1e293b;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
 }
 
 input:focus, select:focus, textarea:focus {
-    border-color: #0056b3;
+    border-color: #2563eb;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0,86,179,0.1);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 textarea {
@@ -88,24 +150,31 @@ textarea {
     height: 90px;
 }
 
-button {
-    background-color: #0056b3;
+/* Botones */
+button, .btn-submit {
+    background-color: #2563eb;
     color: white;
     border: none;
-    padding: 11px 20px;
+    padding: 12px 20px;
     font-size: 15px;
     font-weight: 600;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     width: 100%;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-button:hover {
-    background-color: #004494;
+button:hover, .btn-submit:hover {
+    background-color: #1d4ed8;
 }
 
-/* Estilos para Tablas de Listados */
+button:active, .btn-submit:active {
+    transform: scale(0.98);
+}
+
+/* ==========================================
+   5. Tablas de Listados
+   ================================---------- */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -130,12 +199,17 @@ tr:hover {
     background-color: #f8f9fa;
 }
 
-/* Mensajes de éxito o error */
-.mensaje, [id^="mensaje"] {
+/* ==========================================
+   6. Alertas y Mensajes de Éxito / Error
+   ================================---------- */
+.mensaje, .error-message, [id^="mensaje"] {
+    margin-top: 15px;
     margin-bottom: 15px;
-    padding: 10px 15px;
-    border-radius: 4px;
-    font-size: 14px;
+    padding: 12px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    text-align: center;
+    font-weight: 500;
     display: none;
 }
 
@@ -146,9 +220,9 @@ tr:hover {
     display: block !important;
 }
 
-.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+.error, .error-message {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
     display: block !important;
 }

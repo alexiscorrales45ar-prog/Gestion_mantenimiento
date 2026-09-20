@@ -1,15 +1,15 @@
 <?php
 namespace app\Controllers;
 
-use app\Repositories\OrdenTrabajoReporsitory;
-use app\Models\OrdenTrabajo;
+use App\Repositories\OrdenTrabajoRepository;
+use App\Models\OrdenTrabajo;
 
 
 class OrdenTrabajoController{
-    private OrdenTrabajoReporsitory $ordenRepo;
+    private OrdenTrabajoRepository $ordenRepo;
 
     public function __construct(){
-        $this->ordenRepo = new OrdenTrabajoReporsitory ();
+        $this->ordenRepo = new OrdenTrabajoRepository ();
 
     
     }

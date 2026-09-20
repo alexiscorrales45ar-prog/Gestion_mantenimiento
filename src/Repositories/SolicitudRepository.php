@@ -2,7 +2,7 @@
 
 namespace app\Repositories;
 
-use app\Models\Solicitud;
+use App\Models\Solicitud;
 use PDO;
 
 class SolicitudRepository{
@@ -19,8 +19,8 @@ class SolicitudRepository{
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             ':equipo_id'               =>$solicitud->getEquipoId(),
-            ':descripcion_problema'     =>$solicitud->getDescripcion_problema(),
-            ':prioridad'                =>$solicitud->getSolicitud(),
+            ':descripcion_problema'     =>$solicitud->getDescripcionProblema(),
+            ':prioridad'                =>$solicitud->getPrioridad(),
             ':estado'                  =>$solicitud->getEstado()
         ]);
     }
@@ -32,7 +32,7 @@ class SolicitudRepository{
                 JOIN cliente c ON e.clientge_id = c.id
                 ORDER BY e.id DESC";
         $stmt = $this->db->query($sql);
-        return $atmt->fetchALL();
+        return $stmt->fetchALL();
     }
    
 

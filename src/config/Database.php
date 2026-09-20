@@ -88,8 +88,22 @@ class Database {
                 tecnico_id INTEGER NOT NULL,
                 fecha_asignacion DATETIME DEFAULT CURRENT_TIMESTAMP,
                 estado TEXT CHECK(estado IN ('ASIGNADA', 'EN_PROCESO', 'FINALIZADA')) DEFAULT 'ASIGNADA',
+                actividades TEXT,
+                costo REAL DEFAULT 0.0,
+                fecha_inicio DATETIME,
+                fecha_fin DATETIME,
                 FOREIGN KEY (solicitud_id) REFERENCES solicitudes(id) ON DELETE CASCADE,
                 FOREIGN KEY (tecnico_id) REFERENCES tecnicos(id) ON DELETE RESTRICT
+            );
+        ";
+
+        $sqlUsuario="
+            CREATE TABLE IF NOT EXISTS usuario (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            correo TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            rol TEXT NOT NULL CHECK(rol IN ('admin', 'recepcionista', 'tecnico', 'supervisor', 'cliente'))
             );
         ";
 
@@ -99,6 +113,7 @@ class Database {
         $this->conn->exec($sqlSolicitudes);
         $this->conn->exec($sqlTecnicos);
         $this->conn->exec($sqlOrdenes);
+        $this->conn->exec($sqlUsuario);
     }
 }
 
