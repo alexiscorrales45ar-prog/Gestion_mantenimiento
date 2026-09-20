@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Solicitudes - Recepción</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body style="margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333;">
+
+    <!-- Menú Navegación Principal / Dashboard -->
+    <nav style="background-color: #2c3e50; padding: 12px; text-align: center; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <a href="dashboard.html" style="color: white; text-decoration: none; margin: 0 15px; font-weight: bold;">📊 Dashboard</a>
+        <a href="cliente.html" style="color: white; text-decoration: none; margin: 0 15px; font-weight: bold;">👥 Recepción & Clientes</a>
+        <a href="solicitudes.html" style="color: #2ecc71; text-decoration: none; margin: 0 15px; font-weight: bold;">📝 Solicitudes</a>
+        <a href="tecnico.html" style="color: white; text-decoration: none; margin: 0 15px; font-weight: bold;">🛠️ Órdenes de Trabajo</a>
+        <a href="login.html" style="color: #e74c3c; text-decoration: none; margin: 0 15px; font-weight: bold; float: right;">Cerrar Sesión</a>
+    </nav>
+
+    <header style="max-width: 900px; margin: 0 auto 20px auto; text-align: left;">
+        <h1 style="margin: 0; color: #2c3e50; font-size: 1.8rem;">Módulo de Solicitudes de Mantenimiento</h1>
+        <p style="margin: 5px 0 0 0; color: #7f8c8d; font-size: 0.95rem;">Caso de Uso 2: Registro de Falla y Generación de Código Único de Seguimiento</p>
+    </header>
+
+    <main style="max-width: 900px; margin: 0 auto; padding: 0;">
+
+        <!-- Mensajes del Sistema (Éxito / Error) -->
+        <div id="mensajeSistema" style="display: none; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-weight: bold; font-size: 0.95rem;"></div>
+
+        <!-- BLOQUE 1: BUSCAR CLIENTE Y CREAR SOLICITUD -->
+        <section style="background: #ffffff; border: 1px solid #dcdcdc; padding: 20px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <h2 style="margin-top: 0; color: #2c3e50; font-size: 1.35rem; border-bottom: 2px solid #3498db; padding-bottom: 8px; display: inline-block;">1. Registrar Nueva Solicitud</h2>
+            <p style="color: #555; margin-bottom: 15px; font-size: 0.95rem;">Busque el cliente por Cédula o Teléfono para cargar sus equipos asociados:</p>
+
+            <!-- Paso A: Buscar Cliente -->
+            <form id="formBuscarClienteSolicitud" style="display: table !important; width: 100% !important; border-collapse: separate !important; border-spacing: 0 !important; margin-bottom: 20px;">
+                <div style="display: table-cell !important; width: 100% !important; vertical-align: middle !important;">
+                    <input type="text" id="buscarDocCliente" name="documento" placeholder="Ingrese Cédula o Teléfono del cliente" required 
+                           style="width: 100% !important; padding: 10px 14px !important; border: 1px solid #ccc !important; border-radius: 5px 0 0 5px !important; font-size: 1rem !important; box-sizing: border-box !important; outline: none !important;">
+                </div>
+                
+                <div style="display: table-cell !important; width: 1% !important; vertical-align: middle !important; white-space: nowrap !important;">
+                    <button type="submit" style="padding: 10px 20px !important; background-color: #2b542c !important; color: white !important; border: 1px solid #2b542c !important; border-radius: 0 5px 5px 0 !important; cursor: pointer !important; font-weight: bold !important; font-size: 0.95rem !important;">
+                        🔍 Cargar Cliente
+                    </button>
+                </div>
+            </form>
+
+            <!-- Paso B: Formulario de la Solicitud (Inicia oculto hasta cargar el cliente) -->
+            <form id="formNuevaSolicitud" style="display: none; border-top: 1px solid #eee; padding-top: 15px;">
+                <input type="hidden" id="solicitud_cliente_id" name="cliente_id">
+
+                <div id="infoClienteSeleccionado" style="margin-bottom: 15px; padding: 10px; background: #eef9ff; border-left: 4px solid #3498db; font-weight: 500; font-size: 0.95rem;"></div>
+
+                <div style="margin-bottom: 12px;">
+                    <label for="selectEquipo" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 4px;">Seleccione el Equipo Afectado *</label>
+                    <select id="selectEquipo" name="equipo_id" required style="width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem;">
+                        <option value="">-- Cargando equipos... --</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label for="prioridad" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 4px;">Prioridad de Atención *</label>
+                    <select id="prioridad" name="prioridad" required style="width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem;">
+                        <option value="Baja">Baja (Mantenimiento preventivo / Ajuste menor)</option>
+                        <option value="Media" selected>Media (Falla operacional parcial)</option>
+                        <option value="Alta">Alta (Equipo inoperativo / Crítico)</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="descripcion_falla" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 4px;">Descripción de la Falla / Problema Reportado *</label>
+                    <textarea id="descripcion_falla" name="descripcion_falla" required rows="3" placeholder="Describa a detalle los síntomas presentados..." style="width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem;"></textarea>
+                </div>
+
+                <button type="submit" style="padding: 12px 24px; background-color: #0275d8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold;">
+                    📋 Guardar Solicitud y Generar Ticket
+                </button>
+            </form>
+        </section>
+
+        <!-- BLOQUE 2: CONSULTAR ESTADO DE SOLICITUD POR CÓDIGO ÚNICO -->
+        <section style="background: #ffffff; border: 1px solid #dcdcdc; padding: 20px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <h2 style="margin-top: 0; color: #2c3e50; font-size: 1.35rem; border-bottom: 2px solid #27ae60; padding-bottom: 8px; display: inline-block;">2. Consultar Solicitud por Código Único</h2>
+            <p style="color: #555; margin-bottom: 15px; font-size: 0.95rem;">Ingrese el código asignado (ej. SOL-2026-A1B2) para verificar el estado de la solicitud:</p>
+
+            <form id="formConsultarCodigo" style="display: table !important; width: 100% !important; border-collapse: separate !important; border-spacing: 0 !important;">
+                <div style="display: table-cell !important; width: 100% !important; vertical-align: middle !important;">
+                    <input type="text" id="buscarCodigo" name="codigo" placeholder="Ej. SOL-2026-X89A" required 
+                           style="width: 100% !important; padding: 10px 14px !important; border: 1px solid #ccc !important; border-radius: 5px 0 0 5px !important; font-size: 1rem !important; box-sizing: border-box !important; outline: none !important;">
+                </div>
+                
+                <div style="display: table-cell !important; width: 1% !important; vertical-align: middle !important; white-space: nowrap !important;">
+                    <button type="submit" style="padding: 10px 20px !important; background-color: #27ae60 !important; color: white !important; border: 1px solid #27ae60 !important; border-radius: 0 5px 5px 0 !important; cursor: pointer !important; font-weight: bold !important; font-size: 0.95rem !important;">
+                        🔎 Consultar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Resultado de la Consulta -->
+            <div id="resultadoConsulta" style="display: none; margin-top: 20px; padding: 15px; border-radius: 6px; background-color: #fafafa; border: 1px solid #e0e0e0;"></div>
+        </section>
+
+    </main>
+
+    <!-- Vinculación del Script para controlar las Solicitudes -->
+    <script src="js/solicitudes.js"></script>
+</body>
+</html>

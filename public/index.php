@@ -39,7 +39,7 @@ $ordenTrabajoController = new OrdenTrabajoController();
 $authController = new AuthController();     // Añadido para gestionar la autenticación
 
 // Capturar la variable de control por POST o GET
-$cargar_archivo = $_REQUEST['cargar_archivo'] ?? 0;
+$cargar_archivo = $_REQUEST['cargar_archivo'] ?? $_POST['cargar_archivo'] ?? 0;
 
 // Enrutamiento mediante switch-case
 
@@ -52,7 +52,7 @@ switch ((int)$cargar_archivo) {
 
     case 2:
         // Caso de Uso 2: Registrar Solicitud de Mantenimiento (RF02)[cite: 1]
-        $solicitudController->registrar();
+        $solicitudController->crear();
         break;
 
     case 3:
@@ -85,6 +85,25 @@ switch ((int)$cargar_archivo) {
         // Módulo de Autenticación: Registro
         $authController->registrar();
         break;
+
+    case 9:
+       // Registrar equipo adicional a un cliente exitoso
+        $clienteController->registrarEquipo();
+        break;
+    
+    case 10:
+        // Buscar cliente por docuemnto / telefono
+        $clienteController->buscar();
+        break;
+        
+    case 11:
+        $solicitudController->obtenerEquipos();
+        break;
+    
+    case 12:
+        $solicitudController->consultar();
+        break;
+    
 
     default:
     // Forzar la ruta absoluta saliendo de public si es necesario o unificándola

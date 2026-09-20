@@ -1,39 +1,50 @@
 <?php
-
-namespace app\Repositories;
+namespace App\Repositories;
 
 use App\Models\Solicitud;
 use PDO;
 
-class SolicitudRepository{
+class SolicitudRepository {
     private PDO $db;
 
-    public function __construct(PDO $db){
+    public function __construct(PDO $db) {
         $this->db = $db;
     }
 
-    // Guardar una vueva solicitud de mantenimiento
-    public function guardar(Solicitud $solicitud): bool {
-        $sql = "INSERT INTO solicitudes (equipo_id, descripcion_problema, prioridad, estado)
-                VALUES (:equipo_id, :descripcion_problema, :prioridad, :estado)";
+    // Obtener los equipos asociados a un cliente
+    public function obtenerEquiposPorCliente(int $clienteId): array {
+        $sql = "SELECT id, nombre, marca, modelo, serie FROM equipos WHERE cliente_id = :cliente_id";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            ':equipo_id'               =>$solicitud->getEquipoId(),
-            ':descripcion_problema'     =>$solicitud->getDescripcionProblema(),
-            ':prioridad'                =>$solicitud->getPrioridad(),
-            ':estado'                  =>$solicitud->getEstado()
+        $stmt->execute([':cliente_id' => $clienteId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Guardar solicitud en la BD
+    public function guardarSolicitud(Solicitud $solicitud): int {
+        $sql = "INSERT INTO solicitudes (codigo_seguimiento, cliente_id, equipo_id, descripcion_falla, prioridad, estado) 
+                VALUES (:codigo, :cliente_id, :equipo_id, :falla, :prioridad, :estado)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':codigo'     => $solicitud->getCodigoSeguimiento(),
+            ':cliente_id' => $solicitud->getClienteId(),
+            ':equipo_id'  => $solicitud->getEquipoId(),
+            ':falla'      => $solicitud->getDescripcionFalla(),
+            ':prioridad'  => $solicitud->getPrioridad(),
+            ':estado'     => $solicitud->getEstado()
         ]);
+        return (int) $this->db->lastInsertId();
     }
 
-    // obtener lsita de quipos para llenar el selector en la formulario html
-    public function obtenerEquiposConclientesU(): array{
-        $sql = "SELECT e.id, e.nombre AS equipo_nombre, c.nombre AS cliente_nombre
-                FROM equipos e
-                JOIN cliente c ON e.clientge_id = c.id
-                ORDER BY e.id DESC";
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchALL();
+    // Consultar por código único
+    public function buscarPorCodigo(string $codigo): ?array {
+        $sql = "SELECT s.*, c.nombre AS cliente_nombre, c.cedula, c.telefono, e.nombre AS equipo_nombre, e.marca, e.modelo 
+                FROM solicitudes s
+                INNER JOIN clientes c ON s.cliente_id = c.id
+                INNER JOIN equipos e ON s.equipo_id = e.id
+                WHERE s.codigo_seguimiento = :codigo LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':codigo' => $codigo]);
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $res ?: null;
     }
-   
-
 }

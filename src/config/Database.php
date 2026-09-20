@@ -42,6 +42,7 @@ class Database {
             CREATE TABLE IF NOT EXISTS clientes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
+                cedula TEXT UNIQUE NOT NULL,
                 telefono TEXT NOT NULL,
                 email TEXT,
                 direccion TEXT

@@ -11,42 +11,66 @@ class SolicitudController {
         $this->repository = $repository;
     }
 
-    // Procesa el registro de la solicitud de mantenimiento (RF02)
-    public function registrar(): void {
+    // Obtener lista de equipos
+    public function obtenerEquipos(): void {
+        header('Content-Type: application/json');
+        $clienteId = $_GET['cliente_id'] ?? null;
+
+        if (!$clienteId) {
+            echo json_encode(['success' => false, 'message' => 'ID de cliente requerido.']);
+            return;
+        }
+
+        $equipos = $this->repository->obtenerEquiposPorCliente((int)$clienteId);
+        echo json_encode(['success' => true, 'data' => $equipos]);
+    }
+
+    // Registrar solicitud
+    public function crear(): void {
         header('Content-Type: application/json');
 
-        $input = file_get_contents('php://input');
-        $data = json_decode($input, true);
+        $clienteId = $_POST['cliente_id'] ?? null;
+        $equipoId = $_POST['equipo_id'] ?? null;
+        $falla = $_POST['descripcion_falla'] ?? null;
+        $prioridad = $_POST['prioridad'] ?? 'Media';
 
-        if (empty($data['equipo_id']) || empty($data['descripcion_problema']) || empty($data['prioridad'])) {
-            echo json_encode([
-                'success' => false, 
-                'message' => 'El equipo, la descripción del problema y la prioridad son obligatorios.'
-            ]);
+        if (empty($clienteId) || empty($equipoId) || empty($falla)) {
+            echo json_encode(['success' => false, 'message' => 'Cliente, equipo y descripción son obligatorios.']);
             return;
         }
 
         try {
-            $solicitud = new Solicitud(
-                null,
-                (int)$data['equipo_id'],
-                $data['descripcion_problema'],
-                $data['prioridad'],
-                'PENDIENTE'
-            );
-            
-            $this->repository->guardar($solicitud);
+            // Generador del Código Único
+            $codigoSeguimiento = 'SOL-' . date('Y') . '-' . strtoupper(substr(md5(uniqid(rand(), true)), 0, 4));
+
+            $solicitud = new Solicitud(null, $codigoSeguimiento, (int)$clienteId, (int)$equipoId, $falla, $prioridad, 'Pendiente');
+            $this->repository->guardarSolicitud($solicitud);
 
             echo json_encode([
                 'success' => true,
-                'message' => 'Solicitud de mantenimiento registrada exitosamente con estado PENDIENTE.'
+                'message' => '¡Solicitud registrada exitosamente!',
+                'codigo' => $codigoSeguimiento
             ]);
-        
         } catch (\Exception $e) {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Error al registrar la solicitud: ' . $e->getMessage()
-            ]);
+            echo json_encode(['success' => false, 'message' => 'Error al registrar solicitud: ' . $e->getMessage()]);
+        }
+    }
+
+    // Consultar por código
+    public function consultar(): void {
+        header('Content-Type: application/json');
+        $codigo = $_GET['codigo'] ?? '';
+
+        if (empty($codigo)) {
+            echo json_encode(['success' => false, 'message' => 'Ingrese un código de seguimiento.']);
+            return;
+        }
+
+        $solicitud = $this->repository->buscarPorCodigo($codigo);
+        if ($solicitud) {
+            echo json_encode(['success' => true, 'data' => $solicitud]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se encontró ninguna solicitud con ese código.']);
         }
     }
 }
