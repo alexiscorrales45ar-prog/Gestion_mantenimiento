@@ -1,84 +1,105 @@
 <!DOCTYPE html>
-<htmil lang="es">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta mane="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel del técnico - Gestion de mantenimiento</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo Técnico - Órdenes de Trabajo</title>
     <link rel="stylesheet" href="css/estilos.css">
-    <script src="js/tecnico.js"></script>
 </head>
-<body>
+<body style="margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333;">
 
-    <header>
-        <h1> Panel de Tecnico de Mantenimiento</h1>
-        <p> Consulta de órdenes adignadas y ejecución de servicios.</p>
+    <!-- Menú Navegación Principal / Dashboard -->
+    <nav style="background-color: #2c3e50; padding: 12px; text-align: center; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <a href="dashboard.html" style="color: white; text-decoration: none; margin: 0 15px; font-weight: bold;">📊 Dashboard</a>
+        <a href="cliente.html" style="color: white; text-decoration: none; margin: 0 15px; font-weight: bold;">👥 Recepción & Clientes</a>
+        <a href="solicitudes.html" style="color: white; text-decoration: none; margin: 0 15px; font-weight: bold;">📝 Solicitudes</a>
+        <a href="tecnico.html" style="color: #2ecc71; text-decoration: none; margin: 0 15px; font-weight: bold;">🛠️ Órdenes de Trabajo</a>
+        <a href="login.html" style="color: #e74c3c; text-decoration: none; margin: 0 15px; font-weight: bold; float: right;">Cerrar Sesión</a>
+    </nav>
+
+    <header style="max-width: 1000px; margin: 0 auto 20px auto; text-align: left;">
+        <h1 style="margin: 0; color: #2c3e50; font-size: 1.8rem;">Módulo de Gestión Técnica y Diagnóstico</h1>
+        <p style="margin: 5px 0 0 0; color: #7f8c8d; font-size: 0.95rem;">Caso de Uso 3: Atención de Solicitudes, Diagnóstico y Cambio de Estado</p>
     </header>
-    <main>
-        <section>
-            <h2> Consulta Orden Asignada</h2>
-            <div>
-                <label for="buscar_orden_id">ID de Orden</label>
-                <input type="number" id="buscar_orden_id" placeholder="Ingresa ID de orden">
-                <button type="button" id="btnConsultarOrden">Consultar Detalles</button>
+
+    <main style="max-width: 1000px; margin: 0 auto;">
+
+        <!-- Mensajes del Sistema -->
+        <div id="mensajeSistema" style="display: none; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-weight: bold; font-size: 0.95rem;"></div>
+
+        <!-- SECCIÓN 1: TABLA DE SOLICITUDES ASIGNADAS -->
+        <section style="background: #ffffff; border: 1px solid #dcdcdc; padding: 20px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; margin-bottom: 15px;">
+                <h2 style="margin: 0; color: #2c3e50; font-size: 1.35rem;">📋 Solicitudes en Taller</h2>
+                <button id="btnRefrescarTabla" style="padding: 8px 15px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                    🔄 Actualizar Lista
+                </button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd; color: #2c3e50;">
+                            <th style="padding: 10px;">Código Ticket</th>
+                            <th style="padding: 10px;">Cliente</th>
+                            <th style="padding: 10px;">Equipo</th>
+                            <th style="padding: 10px;">Prioridad</th>
+                            <th style="padding: 10px;">Estado</th>
+                            <th style="padding: 10px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSolicitudesBody">
+                        <tr>
+                            <td colspan="6" style="padding: 15px; text-align: center; color: #777;">Cargando solicitudes...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <!--Informacion detallada de la ornden y equipo (lectura) -->
-        <sectionz id="infoOrdenContainer" style="display: none;">
-            <h3>Detalles del Servicio y Equipo</h3>
-            <div>
-                <p><strong>Cliente:</strong> <span id="lblCliente">-</span></p>
-                <p><strong>Equipo:</strong> <span id="lblEquipo">-</span></p>
-                <p><strong>Problema Reportado:</strong> <span id="lblProblema">-</span></p>
-                <p><strong>Prioridad</strong> <span id="lblPrioridad">-</span></p>
-            </div>
-        </sectionz>
+        <!-- SECCIÓN 2: FORMULARIO PARA PROCESAR ORDEN / DIAGNÓSTICO -->
+        <section id="seccionDiagnostico" style="display: none; background: #ffffff; border: 1px solid #dcdcdc; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <h2 style="margin-top: 0; color: #2c3e50; font-size: 1.35rem; border-bottom: 2px solid #f39c12; padding-bottom: 8px; display: inline-block;">🛠️ Diagnosticar y Actualizar Orden</h2>
 
-        <!--Formulario de Ejecucion y actualización-->
-        <seccion>
-            <h2>Actualizar Ejecucion de la Orden</h2>
-            <div id="mensajeTecnico"></div>
+            <form id="formActualizarOrden" onsubmit="return false">
+                <input type="hidden" id="solicitud_id" name="solicitud_id">
 
-            <form id="formEjecucionTecnica">
-                <div class="form-group">
-                    <label for="orden_id">ID de la Orden de Trabajo</label>
-                    <input type="number" id="orden_id" name="orden_id" required placeholder="ej. 1">
-                </div>
+                <!-- Resumen de la Solicitud Seleccionada -->
+                <div id="resumenSolicitud" style="margin-bottom: 15px; padding: 12px; background: #fef9e7; border-left: 4px solid #f39c12; font-size: 0.95rem; line-height: 1.5;"></div>
 
-                <div class="form-group">
-                    <label for="estado">Estado del servicio</label>
-                    <select id="estado" name="estado" required>
-                        <option value="">Selecion un estado</option>
-                        <option value="EN_PROCESO">En proceso</option>
-                        <option value="FINALIZADA">Finalizada</option>
+                <div style="margin-bottom: 12px;">
+                    <label for="estado" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 4px;">Nuevo Estado del Ticket *</label>
+                    <select id="estado" name="estado" required style="width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem;">
+                        <option value="Pendiente">⏳ Pendiente</option>
+                        <option value="En Proceso">⚙️ En Proceso (En diagnóstico / reparación)</option>
+                        <option value="Finalizada">✅ Finalizada (Reparado / Listo para entrega)</option>
+                        <option value="Cancelada">❌ Cancelada (No reparable / Cliente rechaza)</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="actividades">Actividades Realizadas</label>
-                    <teztarea id="actividades" name="actividades"  rows="4" placeholder="Describa el mantenimiento realizado..."></teztarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="costo">Costo total/Materiales($)</label>
-                    <input type="number" step="0.01" id="costo" name="costo" placeholder="0.00">
+                <div style="margin-bottom: 12px;">
+                    <label for="diagnostico" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 4px;">Informe / Diagnóstico Técnico *</label>
+                    <textarea id="diagnostico" name="diagnostico" required rows="4" placeholder="Detalle los hallazgos técnicos, componentes reemplazados o pruebas realizadas..." style="width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem;"></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="fecha_inicio">Fecha y hora de Inicio</label>
-                    <input type="datetime-local" id="fecha_inicio" name="fecha_inicio">
+                <div style="margin-bottom: 20px;">
+                    <label for="costo" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 4px;">Costo Estimado / Final ($)</label>
+                    <input type="number" step="0.01" id="costo" name="costo" placeholder="0.00" style="width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem;">
                 </div>
 
-                <div class="form-group">
-                    <label for="fecha_fin">Fecha y hora de Finalización</label>
-                    <input type="datetime-local" id="fecha_fin" name="fecha_fin">
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" style="padding: 12px 24px; background-color: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold;">
+                        💾 Guardar Diagnóstico y Estado
+                    </button>
+                    <button type="button" id="btnCancelarDiagnostico" style="padding: 12px 20px; background-color: #7f8c8d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.95rem;">
+                        Cancelar
+                    </button>
                 </div>
-
-                <button type="submit">Guardar y Actualizar Orden</button>
-
-
             </form>
-        </seccion>
+        </section>
+
     </main>
+
+    <script src="js/tecnico.js"></script>
 </body>
-</htmil>
+</html>

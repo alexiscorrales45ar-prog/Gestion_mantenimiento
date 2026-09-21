@@ -8,14 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoClienteDiv = document.getElementById('infoClienteSeleccionado');
     const selectEquipo = document.getElementById('selectEquipo');
 
+    // Referencias de la Ventana Modal Flotante
+    const modalTicketGenerado = document.getElementById('modalTicketGenerado');
+    const codigoGeneradoDisplay = document.getElementById('codigoGeneradoDisplay');
+    const detallesTicketGenerado = document.getElementById('detallesTicketGenerado');
+    const btnCerrarModalTicket = document.getElementById('btnCerrarModalTicket');
+
     const formConsultarCodigo = document.getElementById('formConsultarCodigo');
     const inputCodigo = document.getElementById('buscarCodigo');
     const divResultadoConsulta = document.getElementById('resultadoConsulta');
 
     const mensajeSistema = document.getElementById('mensajeSistema');
 
-    // Función auxiliar para mostrar alertas de feedback
     function mostrarMensaje(texto, esExito) {
+        if (!mensajeSistema) return;
         mensajeSistema.style.display = 'block';
         mensajeSistema.style.backgroundColor = esExito ? '#d4edda' : '#f8d7da';
         mensajeSistema.style.color = esExito ? '#155724' : '#721c24';
@@ -24,14 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { mensajeSistema.style.display = 'none'; }, 5000);
     }
 
-    // 1. PASO A: BUSCAR CLIENTE Y CARGAR SUS EQUIPOS
+    // 1. BUSCAR CLIENTE Y CARGAR SUS EQUIPOS
     if (formBuscarCliente) {
         formBuscarCliente.addEventListener('submit', (e) => {
             e.preventDefault();
             const documento = inputBuscarDoc.value.trim();
             if (!documento) return;
 
-            // Consultar datos del cliente
             fetch(`index.php?cargar_archivo=10&documento=${encodeURIComponent(documento)}`)
                 .then(res => res.json())
                 .then(data => {
@@ -40,11 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         inputClienteIdHidden.value = cliente.id;
                         infoClienteDiv.innerHTML = `👤 <strong>Cliente:</strong> ${cliente.nombre} | <strong>Cédula:</strong> ${cliente.cedula || 'N/A'} | <strong>Teléfono:</strong> ${cliente.telefono}`;
 
-                        // Cargar equipos pertenecientes a este cliente
                         cargarEquiposCliente(cliente.id);
                     } else {
                         formNuevaSolicitud.style.display = 'none';
-                        mostrarMensaje('Cliente no encontrado. Por favor regístrelo primero en el módulo de Recepción.', false);
+                        mostrarMensaje('Cliente no encontrado. Por favor regístrelo primero en Recepción.', false);
                     }
                 })
                 .catch(err => {
@@ -54,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Función para llenar la lista desplegable de equipos por cliente
     function cargarEquiposCliente(clienteId) {
         fetch(`index.php?cargar_archivo=11&cliente_id=${clienteId}`)
             .then(res => res.json())
@@ -64,31 +67,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     data.data.forEach(e => {
                         const opt = document.createElement('option');
                         opt.value = e.id;
-                        opt.textContent = `${e.nombre} - Marca: ${e.marca || 'S/N'} | Mod: ${e.modelo || 'S/N'} | Serie: ${e.serie || 'S/N'}`;
+                        opt.textContent = `${e.nombre} - Marca: ${e.marca || 'N/A'} | Mod: ${e.modelo || 'N/A'} | Serie: ${e.serie || 'N/A'}`;
                         selectEquipo.appendChild(opt);
                     });
                     formNuevaSolicitud.style.display = 'block';
                     mostrarMensaje('Cliente y equipos cargados correctamente.', true);
                 } else {
                     formNuevaSolicitud.style.display = 'none';
-                    mostrarMensaje('El cliente no tiene ningún equipo registrado. Por favor vincule un equipo en el módulo de Recepción.', false);
+                    mostrarMensaje('El cliente no tiene equipos registrados.', false);
                 }
             })
             .catch(err => console.error('Error al cargar equipos:', err));
     }
 
-    // 2. PASO B: GUARDAR SOLICITUD Y OBTENER CÓDIGO ÚNICO
+    // 2. GUARDAR SOLICITUD Y MOSTRAR MODAL FLOTANTE
     if (formNuevaSolicitud) {
         formNuevaSolicitud.addEventListener('submit', (e) => {
             e.preventDefault();
             const formData = new FormData(formNuevaSolicitud);
             formData.append('cargar_archivo', '2');
 
+            const equipoTexto = selectEquipo.options[selectEquipo.selectedIndex].text;
+            const fallaTexto = document.getElementById('descripcion_falla').value;
+            const prioridadTexto = document.getElementById('prioridad').value;
+
             fetch('index.php', { method: 'POST', body: formData })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        mostrarMensaje(`${data.message} CÓDIGO DE SEGUIMIENTO: ${data.codigo}`, true);
+                        // Inyectar el código único generado
+                        codigoGeneradoDisplay.innerText = data.codigo;
+                        
+                        detallesTicketGenerado.innerHTML = `
+                            <strong>Equipo:</strong> ${equipoTexto}<br>
+                            <strong>Prioridad:</strong> ${prioridadTexto}<br>
+                            <strong>Falla Reportada:</strong> ${fallaTexto}
+                        `;
+
+                        // MOSTRAR PESTAÑA FLOTANTE (Centrada en la pantalla)
+                        modalTicketGenerado.style.display = 'flex';
+                        
+                        // Limpiar formulario de fondo
                         formNuevaSolicitud.reset();
                         formNuevaSolicitud.style.display = 'none';
                         formBuscarCliente.reset();
@@ -96,7 +115,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         mostrarMensaje('Error: ' + data.message, false);
                     }
                 })
-                .catch(err => console.error('Error al guardar solicitud:', err));
+                .catch(err => {
+                    console.error('Error al guardar solicitud:', err);
+                    mostrarMensaje('Fallo de conexión al guardar la solicitud.', false);
+                });
+        });
+    }
+
+    // EVENTO PARA CERRAR LA VENTANA MODAL FLOTANTE AL HACER CLIC
+    if (btnCerrarModalTicket) {
+        btnCerrarModalTicket.addEventListener('click', () => {
+            modalTicketGenerado.style.display = 'none';
         });
     }
 

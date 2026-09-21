@@ -12,6 +12,7 @@ spl_autoload_register(function($class){
     }
 });
 
+
 // Importaciones con las mayúsculas correctas (App)
 use App\Config\Database;
 use App\Repositories\ClienteRepository;
@@ -22,17 +23,19 @@ use App\Repositories\UsuarioRepository;    // Corregido a App\
 use App\Controllers\ClienteController;
 use App\Controllers\SolicitudController;
 use App\Controllers\OrdenTrabajoController;
-use App\Controllers\AuthController;         // Corregido a App\
+use App\Controllers\AuthController;     // Corregido a App\
+use App\Controllers\TecnicoController;
 
 // Inicializar base de datos y repositorios usando el Singleton
 $db = Database::getInstance()->getConnection(); 
 
 $clienteRepo = new ClienteRepository($db);
 $solicitudRepo = new SolicitudRepository($db);
-$tecnicoRepo = new TecnicoRepository(); 
+$tecnicoRepo = new TecnicoRepository($db); 
 $ordenRepo = new OrdenTrabajoRepository(); // Corregido el typo
 $usuarioRepo = new UsuarioRepository();    // Añadido para el login
 
+$TecnicoController = new TecnicoController($tecnicoRepo);
 $clienteController = new ClienteController($clienteRepo);
 $solicitudController = new SolicitudController($solicitudRepo);
 $ordenTrabajoController = new OrdenTrabajoController();
@@ -103,7 +106,27 @@ switch ((int)$cargar_archivo) {
     case 12:
         $solicitudController->consultar();
         break;
-    
+
+    case 13:
+        // Obtener lista de solicitudes para el tecnico
+        $TecnicoController->listar();
+        break;
+
+   case 14:
+        header('Content-Type: application/json; charset=utf-8');
+        try {
+            // Llamamos al controlador de técnico
+            $TecnicoController->actualizar();
+        } catch (\Throwable $e) {
+            // Si ocurre cualquier error o excepción en el Controller/Repository, lo capturamos
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error capturado en index.php: ' . $e->getMessage(),
+                'archivo' => $e->getFile(),
+                'linea'   => $e->getLine()
+            ]);
+        }
+        break;
 
     default:
     // Forzar la ruta absoluta saliendo de public si es necesario o unificándola

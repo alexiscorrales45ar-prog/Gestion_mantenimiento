@@ -1,6 +1,6 @@
 <?php
 
-namespace App\config;
+namespace App\Config;
 
 use PDO;
 use PDOException;
@@ -11,7 +11,6 @@ class Database {
     private string $dbFile;
 
     private function __construct() {
-        // Ruta del archivo de base de datos SQLite dentro del proyecto
         $this->dbFile = __DIR__ . '/../../database.sqlite';
         
         try {
@@ -23,7 +22,6 @@ class Database {
         }
     }
 
-    // Patrón Singleton para obtener la única instancia de la clase
     public static function getInstance(): Database {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -31,12 +29,10 @@ class Database {
         return self::$instance;
     }
 
-    // Obtener el objeto de conexión PDO nativo
     public function getConnection(): ?PDO {
         return $this->conn;
     }
 
-    // Inicializar y crear tablas automáticamente si no existen
     private function inicializarTablas(): void {
         $sqlClientes = "
             CREATE TABLE IF NOT EXISTS clientes (
@@ -65,8 +61,10 @@ class Database {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 equipo_id INTEGER NOT NULL,
                 descripcion_problema TEXT NOT NULL,
-                prioridad TEXT CHECK(prioridad IN ('BAJA', 'MEDIA', 'ALTA')) DEFAULT 'MEDIA',
-                estado TEXT CHECK(estado IN ('PENDIENTE', 'EN_PROCESO', 'FINALIZADA')) DEFAULT 'PENDIENTE',
+                prioridad TEXT DEFAULT 'Media',
+                estado TEXT DEFAULT 'Pendiente',
+                diagnostico TEXT,
+                costo_estimado REAL DEFAULT 0.0,
                 fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (equipo_id) REFERENCES equipos(id) ON DELETE CASCADE
             );
@@ -78,7 +76,7 @@ class Database {
                 nombre TEXT NOT NULL,
                 especialidad TEXT,
                 contacto TEXT NOT NULL,
-                estado TEXT CHECK(estado IN ('DISPONIBLE', 'OCUPADO')) DEFAULT 'DISPONIBLE'
+                estado TEXT DEFAULT 'DISPONIBLE'
             );
         ";
 
@@ -88,7 +86,7 @@ class Database {
                 solicitud_id INTEGER NOT NULL,
                 tecnico_id INTEGER NOT NULL,
                 fecha_asignacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-                estado TEXT CHECK(estado IN ('ASIGNADA', 'EN_PROCESO', 'FINALIZADA')) DEFAULT 'ASIGNADA',
+                estado TEXT DEFAULT 'ASIGNADA',
                 actividades TEXT,
                 costo REAL DEFAULT 0.0,
                 fecha_inicio DATETIME,
@@ -98,17 +96,16 @@ class Database {
             );
         ";
 
-        $sqlUsuario="
+        $sqlUsuario = "
             CREATE TABLE IF NOT EXISTS usuario (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
-            correo TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            rol TEXT NOT NULL CHECK(rol IN ('admin', 'recepcionista', 'tecnico', 'supervisor', 'cliente'))
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                correo TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                rol TEXT NOT NULL CHECK(rol IN ('admin', 'recepcionista', 'tecnico', 'supervisor', 'cliente'))
             );
         ";
 
-        // Ejecutar la creación de todas las tablas en orden de dependencias
         $this->conn->exec($sqlClientes);
         $this->conn->exec($sqlEquipos);
         $this->conn->exec($sqlSolicitudes);
@@ -117,6 +114,3 @@ class Database {
         $this->conn->exec($sqlUsuario);
     }
 }
-
-
-?>
