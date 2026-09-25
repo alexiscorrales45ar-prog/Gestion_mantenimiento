@@ -1,77 +1,97 @@
 <?php
 namespace App\Controllers;
 
-// 1. Asegúrate de importar el repositorio correctamente
-use App\Repositories\UsuarioRepository;
+use App\Config\Database;
+use PDO;
 
 class AuthController {
-    
-    // 2. Declara explícitamente la propiedad con su tipo para que el editor la reconozca
-    private UsuarioRepository $usuarioRepo;
+    private PDO $db;
 
     public function __construct() {
-        $this->usuarioRepo = new UsuarioRepository();
+        $this->db = Database::getInstance()->getConnection();
     }
 
+    /**
+     * Procesa el inicio de sesión
+     */
     public function login(): void {
-        session_start();
-        header('Content-Type: application/json');
+        while (ob_get_level()) { ob_end_clean(); }
+        header('Content-Type: application/json; charset=utf-8');
 
-        $input = json_decode(file_get_contents('php://input'), true);
-        $correo = trim($input['usuario'] ?? '');
-        $password = trim($input['password'] ?? '');
+        $correo   = trim($_POST['correo'] ?? '');
+        $password = $_POST['password'] ?? '';
 
         if (empty($correo) || empty($password)) {
-            echo json_encode(['success' => false, 'message' => 'Ingrese correo y contraseña.']);
-            return;
-        }
-
-        // Aquí ya no te marcará error el editor
-        $usuario = $this->usuarioRepo->buscarCorreo($correo);
-
-        if ($usuario && password_verify($password, $usuario['password'])) {
-            $_SESSION['usuario'] = $usuario['correo'];
-            $_SESSION['nombre'] = $usuario['nombre'];
-            $_SESSION['rol'] = $usuario['rol'];
-
             echo json_encode([
-                'success' => true,
-                'rol' => $usuario['rol'],
-                'message' => '¡Bienvenido al sistema, ' . $usuario['nombre'] . '!'
-            ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Credenciales inválidas.']);
+                'success' => false,
+                'message' => 'El correo y la contraseña son obligatorios.'
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
         }
+
+        try {
+            // CORREGIDO: Cambiado 'usuario' por 'usuarios'
+            $sql = "SELECT id, nombre, correo, password, rol FROM usuarios WHERE correo = :correo LIMIT 1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':correo' => $correo]);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Verificación de credenciales (Soporta hash con password_verify o texto plano)
+            if ($usuario && ($password === $usuario['password'] || password_verify($password, $usuario['password']))) {
+                
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+
+                // Guardamos los datos clave en la Sesión de PHP
+                $_SESSION['usuario_id']     = $usuario['id'];
+                $_SESSION['usuario_nombre'] = $usuario['nombre'];
+                $_SESSION['usuario_correo'] = $usuario['correo'];
+                $_SESSION['rol']            = strtolower($usuario['rol']);
+
+                $rolFormateado = strtolower($usuario['rol']);
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => '¡Inicio de sesión exitoso!',
+                    'rol'     => $rolFormateado, // Agregado aquí para que coincida directo con resultado.rol en el JS
+                    'data'    => [
+                        'id'     => $usuario['id'],
+                        'nombre' => $usuario['nombre'],
+                        'rol'    => $rolFormateado
+                    ]
+                ], JSON_UNESCAPED_UNICODE);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Credenciales incorrectas. Verifique su correo o contraseña.'
+                ], JSON_UNESCAPED_UNICODE);
+            }
+        } catch (\Throwable $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error en el servidor: ' . $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE);
+        }
+        exit;
     }
 
-    public function registrar(): void {
-        header('Content-Type: application/json');
-
-        $input = json_decode(file_get_contents('php://input'), true);
-        $nombre = trim($input['nombre'] ?? '');
-        $correo = trim($input['correo'] ?? '');
-        $password = trim($input['password'] ?? '');
-        $rol = trim($input['rol'] ?? 'cliente');
-
-        if (empty($nombre) || empty($correo) || empty($password)) {
-            echo json_encode(['success' => false, 'message' => 'Todos los campos son obligatorios.']);
-            return;
+    /**
+     * Cierra la sesión activa
+     */
+    public function logout(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
+        $_SESSION = [];
+        session_destroy();
 
-        // Validación usando el método del repositorio
-        if ($this->usuarioRepo->buscarCorreo($correo)) {
-            echo json_encode(['success' => false, 'message' => 'El correo ya se encuentra registrado.']);
-            return;
-        }
-
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $creado = $this->usuarioRepo->registrar($nombre, $correo, $passwordHash, $rol);
-
-        if ($creado) {
-            echo json_encode(['success' => true, 'message' => 'Usuario registrado exitosamente.']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Error al registrar el usuario.']);
-        }
+        while (ob_get_level()) { ob_end_clean(); }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => true,
+            'message' => 'Sesión cerrada correctamente.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
 }
-?>

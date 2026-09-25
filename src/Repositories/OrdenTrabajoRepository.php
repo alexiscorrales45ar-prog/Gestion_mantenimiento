@@ -56,7 +56,7 @@ class OrdenTrabajoRepository {
     public function obtenerHistorialReportes(string $filtro = ''): array {
         $sql = "
             SELECT ot.id as orden_id, ot.estado, ot.actividades, ot.costo, ot.fecha_inicio, ot.fecha_fin,
-                   s.descripcion_problema as problema, s.prioridad,
+                   s.descripcion_falla as problema, s.prioridad,
                    c.nombre as cliente_nombre,
                    e.nombre as equipo_nombre, e.modelo as equipo_modelo,
                    t.nombre as tecnico_nombre

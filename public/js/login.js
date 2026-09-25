@@ -8,14 +8,20 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     mensajeError.style.display = 'none';
     mensajeError.textContent = '';
 
+    // Usamos URLserchparams par enviar como un formulario estandar POST
+
+    const params = new URLSearchParams();
+    params.append('correo', usuario);
+    params.append('password', password);
+
     try {
         // Petición asíncrona al enrutador central de PHP
         const response = await fetch('../index.php?cargar_archivo=7', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: JSON.stringify({ usuario, password })
+            body: params
         });
 
         const resultado = await response.json();

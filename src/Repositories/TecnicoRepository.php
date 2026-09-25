@@ -11,7 +11,8 @@ class TecnicoRepository {
     }
 
     public function obtenerSolicitudes(): array {
-        $sql = "SELECT s.*, 
+        $sql = "SELECT s.*,
+                       s.descripcion_falla AS descripcion_problema, 
                        c.nombre AS cliente_nombre, 
                        c.telefono AS cliente_telefono, 
                        e.nombre AS equipo_nombre, 

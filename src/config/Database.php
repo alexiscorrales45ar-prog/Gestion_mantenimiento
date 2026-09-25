@@ -60,7 +60,7 @@ class Database {
             CREATE TABLE IF NOT EXISTS solicitudes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 equipo_id INTEGER NOT NULL,
-                descripcion_problema TEXT NOT NULL,
+                descripcion_falla TEXT NOT NULL,
                 prioridad TEXT DEFAULT 'Media',
                 estado TEXT DEFAULT 'Pendiente',
                 diagnostico TEXT,

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css"> <!-- O tus estilos de CSS actuales -->
+</head>
+<body>
+    <header class="navbar">
+        <h2>Panel de Control</h2>
+        <div class="user-info">
+            <span id="nombreUsuario">Cargando...</span>
+            <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Tarjetas de Resumen -->
+        <section class="cards-grid">
+            <div class="card">
+                <h3>Total Solicitudes</h3>
+                <p id="totalSolicitudes">0</p>
+            </div>
+            <div class="card warning">
+                <h3>Pendientes</h3>
+                <p id="solicitudesPendientes">0</p>
+            </div>
+            <div class="card success">
+                <h3>Completadas</h3>
+                <p id="solicitudesCompletadas">0</p>
+            </div>
+        </section>
+
+        <!-- Tabla de Últimas Solicitudes -->
+        <section class="table-container">
+            <h3>Últimas Solicitudes Registradas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Cliente</th>
+                        <th>Equipo</th>
+                        <th>Descripción / Problema</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaSolicitudes">
+                    <tr>
+                        <td colspan="6" class="text-center">Cargando datos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

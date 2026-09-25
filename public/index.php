@@ -25,6 +25,7 @@ use App\Controllers\SolicitudController;
 use App\Controllers\OrdenTrabajoController;
 use App\Controllers\AuthController;     // Corregido a App\
 use App\Controllers\TecnicoController;
+use App\Controllers\DashboardController;
 
 // Inicializar base de datos y repositorios usando el Singleton
 $db = Database::getInstance()->getConnection(); 
@@ -41,6 +42,7 @@ $solicitudController = new SolicitudController($solicitudRepo);
 $ordenTrabajoController = new OrdenTrabajoController();
 $authController = new AuthController();     // Añadido para gestionar la autenticación
 
+
 // Capturar la variable de control por POST o GET
 $cargar_archivo = $_REQUEST['cargar_archivo'] ?? $_POST['cargar_archivo'] ?? 0;
 
@@ -48,71 +50,95 @@ $cargar_archivo = $_REQUEST['cargar_archivo'] ?? $_POST['cargar_archivo'] ?? 0;
 
 
 switch ((int)$cargar_archivo) {
-    case 1:
+    case'1':
+    case 'dashboard_metricas':
+        $dashboard = new DashboardController();
+        $dashboard->obtenerMetricas();
+        break;
+
+
+    case 'login':
+        $auth = new AuthController();
+        $auth->login();
+        break;
+
+    case 'logout':
+        $auth = new AuthController();
+        $auth->logout();
+        break;
+
+    case 'dashboard_metricas':
+        $dashboard = new DashboardController();
+        $dashboard->obtenerMetricas();
+        break;
+
+
+
+    case 2:
         // Caso de Uso 1: Registrar Cliente y Equipo (RF01)[cite: 1]
         $clienteController->registrar();
         break;
 
-    case 2:
+    case 3:
         // Caso de Uso 2: Registrar Solicitud de Mantenimiento (RF02)[cite: 1]
         $solicitudController->crear();
         break;
 
-    case 3:
+    case 4:
         // Endpoint auxiliar opcional para listar equipos en el selector de solicitudes
         header('Content-Type: application/json');
         echo json_encode($solicitudRepo->obtenerEquiposConclientesU());
         break;
 
-    case 4:
+    case 5:
         // Caso de Uso 3: Generar y Asignar Orden de Trabajo (RF03)[cite: 1]
         $ordenTrabajoController->crearOrden();
         break;
 
-    case 5:
+    case 6:
         // Caso de Uso 4: Ejecutar y actualizar orden de trabajo
         $ordenTrabajoController->actualizarOrden();
         break;
     
-    case 6:
+    case 7:
         // Caso de Uso 5: Consultar historial y generar reportes
         $ordenTrabajoController->generarReporteHistorial();
         break;
 
-    case 7:
+    case 8:
         // Módulo de Autenticación: Login
         $authController->login();
         break;
 
-    case 8:
+    case 9:
         // Módulo de Autenticación: Registro
-        $authController->registrar();
+        $authController->crearUsuario();
         break;
 
-    case 9:
+    case 10:
        // Registrar equipo adicional a un cliente exitoso
         $clienteController->registrarEquipo();
         break;
     
-    case 10:
+    case 11:
         // Buscar cliente por docuemnto / telefono
         $clienteController->buscar();
         break;
         
-    case 11:
+    case 12:
         $solicitudController->obtenerEquipos();
         break;
     
-    case 12:
+    case 13:
         $solicitudController->consultar();
         break;
 
-    case 13:
+    case 14:
         // Obtener lista de solicitudes para el tecnico
         $TecnicoController->listar();
         break;
 
-   case 14:
+   case 15:
         header('Content-Type: application/json; charset=utf-8');
         try {
             // Llamamos al controlador de técnico
